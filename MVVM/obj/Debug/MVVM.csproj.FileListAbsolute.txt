@@ -1,0 +1,6 @@
+D:\Projects\GitHub\HiveQuery-master\MVVM\bin\Debug\MVVM.dll
+D:\Projects\GitHub\HiveQuery-master\MVVM\bin\Debug\MVVM.pdb
+D:\Projects\GitHub\HiveQuery-master\MVVM\bin\Debug\System.Windows.Interactivity.dll
+D:\Projects\GitHub\HiveQuery-master\MVVM\obj\Debug\MVVM.csprojResolveAssemblyReference.cache
+D:\Projects\GitHub\HiveQuery-master\MVVM\obj\Debug\MVVM.dll
+D:\Projects\GitHub\HiveQuery-master\MVVM\obj\Debug\MVVM.pdb

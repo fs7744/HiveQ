@@ -1,0 +1,128 @@
+<controls:MetroWindow x:Class="HiveQuery.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        Title="{Binding FileName,Mode=TwoWay}" EnableDWMDropShadow="True" x:Name="Main"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:mvvm="clr-namespace:MVVM;assembly=MVVM"
+        xmlns:common="clr-namespace:HiveQuery.Common">
+    <controls:MetroWindow.InputBindings>
+        <KeyBinding Key="F5" Command="{Binding RunCommand}" />
+        <KeyBinding Key="F6" Command="{Binding StopCommand}" />
+        <KeyBinding Modifiers="Control" Key="O" Command="{Binding OpenFileCommand}" />
+        <KeyBinding Modifiers="Control" Key="S" Command="{Binding SavedCommand}" />
+    </controls:MetroWindow.InputBindings>
+
+    <controls:MetroWindow.LeftWindowCommands>
+        <controls:WindowCommands>
+            <Button Content="{DynamicResource appbar_marvel_ironman_mask}" ToolTip="Victor.X.Qu" />
+        </controls:WindowCommands>
+    </controls:MetroWindow.LeftWindowCommands>
+    <controls:MetroWindow.RightWindowCommands>
+        <controls:WindowCommands>
+            <Button Content="{DynamicResource appbar_settings}" ToolTip="Settings"
+                    Command="{Binding SettingsCommand}" />
+        </controls:WindowCommands>
+    </controls:MetroWindow.RightWindowCommands>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.7*" MinHeight="100" />
+            <RowDefinition Height="0.3*" MinHeight="40" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0">
+            <controls:Flyout DockPanel.Dock="Top" IsOpen="{Binding IsOpenSettings,Mode=TwoWay}" Theme="Accent"
+                         IsOpenChanged="Flyout_IsOpenChanged" Visibility="Collapsed" Position="Top">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="IsOpenChanged">
+                        <mvvm:EventCommand Command="{Binding SettingsChangedCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <StackPanel>
+                    <!--<StackPanel Orientation="Horizontal">
+                    <TextBlock Text="HiveWay:"  Margin="0,5,10,0" />
+                    <controls:SplitButton Width="100" Icon="{DynamicResource appbar_connect}"
+                                      ItemsSource="{Binding HiveWays}" />
+                </StackPanel>-->
+                    <DataGrid ItemsSource="{Binding SettingsConnections,Mode=TwoWay}" >
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="Del">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Command="{Binding DataContext.DeleteConnectionCommand,ElementName=Main}"
+                                            CommandParameter="{Binding}">
+                                            <Canvas Width="14" Height="14" Clip="F1 M 0,0L 76,0L 76,76L 0,76L 0,0">
+                                                <Path Width="13.6666" Height="13.6667" Canvas.Left="0" Canvas.Top="0" Stretch="Fill" Fill="Red" Data="F1 M 26.9166,22.1667L 37.9999,33.25L 49.0832,22.1668L 53.8332,26.9168L 42.7499,38L 53.8332,49.0834L 49.0833,53.8334L 37.9999,42.75L 26.9166,53.8334L 22.1666,49.0833L 33.25,38L 22.1667,26.9167L 26.9166,22.1667 Z " />
+                                            </Canvas>
+                                        </Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </controls:Flyout>
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+                <Menu Margin="2,0,0,0">
+                    <MenuItem Header="_File">
+                        <MenuItem Header="_Open..." Icon="{DynamicResource appbar_page_text}"
+                              Command="{Binding OpenFileCommand}" />
+                        <MenuItem Header="_Save" Icon="{DynamicResource appbar_save}"
+                              Command="{Binding SavedCommand}" />
+                        <Separator />
+                        <MenuItem Header="E_xit" Icon="{DynamicResource appbar_sleep}" Click="EXIT_Click" />
+                    </MenuItem>
+                    <MenuItem Header="_Edit">
+                        <MenuItem Header="Cu_t" Command="Cut" />
+                        <MenuItem Header="_Copy" Command="Copy" />
+                        <MenuItem Header="_Paste" Command="Paste" />
+                        <MenuItem Header="_Delete" Command="Delete" />
+                        <Separator />
+                        <MenuItem Header="_Undo" Command="Undo" />
+                        <MenuItem Header="_Redo" Command="Redo" />
+                    </MenuItem>
+                </Menu>
+                <ToolBar Margin="10,0,0,0">
+                    <controls:SplitButton MinWidth="100" Icon="{DynamicResource appbar_database}" Margin="8,0,0,0"
+                                      ItemsSource="{Binding Connections}" DisplayMemberPath="Name"
+                                      SelectedItem="{Binding UsingConnection,Mode=TwoWay}" />
+                    <Button Content="{DynamicResource appbar_control_play}" ToolTip="Run (F5)" Margin="16,0,8,0"
+                            Command="{Binding RunCommand}" />
+                    <Button Content="{DynamicResource appbar_control_stop}" ToolTip="Stop (F6)"
+                            Command="{Binding StopCommand}" />
+                </ToolBar>
+            </StackPanel>
+            <common:MVVMTextEditor x:Name="textEditor" FontFamily="Consolas" FontSize="10pt" SyntaxHighlighting="Hive"
+                               ShowLineNumbers="True" WordWrap="True" SelectedTextInfo="{Binding HiveStatement,Mode=TwoWay}"
+                               TextInfo="{Binding HiveText,Mode=TwoWay}" CompletionKey="{Binding CompletionData,Mode=TwoWay}" 
+                               CompletionDataBase="{Binding CompletionDataBase,Mode=TwoWay}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="TextChanged">
+                        <mvvm:EventCommand Command="{Binding TextChangedCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </common:MVVMTextEditor>
+        </DockPanel>
+
+        <GridSplitter Grid.Row="1" Height="2" HorizontalAlignment="Stretch"
+                       VerticalAlignment="Top" x:Name="gs"
+                       ShowsPreview="True" BorderBrush="#FF171704"
+                       OpacityMask="#FF2A2A0C" Background="#FF26260A" />
+        <controls:ProgressRing IsActive="{Binding IsLoading}" />
+        <DockPanel Grid.Row="1">
+            <Menu HorizontalAlignment="Right" Margin="0,0,0,-40" Panel.ZIndex="99" DockPanel.Dock="Top" >
+                <MenuItem Header="E_xport">
+                    <MenuItem Header="_CSV" Command="{Binding ExportCommand}" CommandParameter="CSV" />
+                    <MenuItem Header="XL_S" Command="{Binding ExportCommand}" CommandParameter="XLS" />
+                    <MenuItem Header="XLS_X" Command="{Binding ExportCommand}" CommandParameter="XLSX" />
+                </MenuItem>
+            </Menu>
+            <Expander  x:Name="ResultExpander" IsExpanded="True">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid x:Name="ResultGrid" />
+                </ScrollViewer>
+            </Expander>
+        </DockPanel>
+    </Grid>
+</controls:MetroWindow>

@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SyntaxDefinition name="Hive" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Comment" foreground="Green" />
+  <Color name="String" foreground="DarkBlue" />
+
+  <RuleSet name="CommentMarkerSet">
+    <Keywords fontWeight="bold" foreground="Red">
+      <Word>TODO</Word>
+      <Word>FIXME</Word>
+    </Keywords>
+    <Keywords fontWeight="bold" foreground="#E0E000">
+      <Word>HACK</Word>
+      <Word>UNDONE</Word>
+    </Keywords>
+  </RuleSet>
+  
+  <RuleSet>
+    <Span color="String">
+      <Begin>"</Begin>
+      <End>"</End>
+      <RuleSet>
+        <Span begin="\\" end="." />
+      </RuleSet>
+    </Span>
+    
+    <Span color="String">
+      <Begin>'</Begin>
+      <End>'</End>
+      <RuleSet>
+        <Span begin="\\" end="."/>
+      </RuleSet>
+    </Span>
+    
+    <Span color="Comment" ruleSet="CommentMarkerSet">
+      <Begin>--</Begin>
+    </Span>
+
+    <Span color="Comment" ruleSet="CommentMarkerSet" multiline="true">
+      <Begin>/\*</Begin>
+      <End>\*/</End>
+    </Span>
+
+    <Keywords fontWeight="bold" foreground="Blue">
+      <Word>CREATE</Word>
+      <Word>DROP</Word>
+      <Word>TABLE</Word>
+      <Word>TRUNCATE</Word>
+      <Word>ALTER</Word>
+      <Word>SHOW</Word>
+      <Word>DESCRIBE</Word>
+      <Word>IF</Word>
+      <Word>NOT</Word>
+      <Word>EXISTS</Word>
+      <Word>USE</Word>
+      <Word>COMMENT</Word>
+      <Word>PARTITIONED</Word>
+      <Word>BY</Word>
+      <Word>ROW</Word>
+      <Word>FORMAT</Word>
+      <Word>STORED</Word>
+      <Word>AS</Word>
+      <Word>LOCATION</Word>
+      <Word>TBLPROPERTIES</Word>
+      <Word>LIKE</Word>
+      <Word>TINYINT</Word>
+      <Word>SMALLINT</Word>
+      <Word>INT</Word>
+      <Word>BIGINT</Word>
+      <Word>BOOLEAN</Word>
+      <Word>FLOAT</Word>
+      <Word>DOUBLE</Word>
+      <Word>STRING</Word>
+      <Word>BINARY</Word>
+      <Word>TIMESTAMP</Word>
+      <Word>DECIMAL</Word>
+      <Word>VARCHAR</Word>
+      <Word>CHAR</Word>
+      <Word>ARRAY</Word>
+      <Word>MAP</Word>
+      <Word>STRUCT</Word>
+      <Word>UNIONTYPE</Word>
+      <Word>DELIMITED</Word>
+      <Word>SERDE</Word>
+      <Word>SEQUENCEFILE</Word>
+      <Word>TEXTFILE</Word>
+      <Word>RCFILE</Word>
+      <Word>ORC</Word>
+      <Word>AVRO</Word>
+      <Word>INPUTFORMAT</Word>
+      <Word>SET</Word>
+      <Word>INTO</Word>
+      <Word>BUCKETS</Word>
+      <Word>ADD</Word>
+      <Word>PARTITION</Word>
+      <Word>RENAME</Word>
+      <Word>TO</Word>
+      <Word>VIEW</Word>
+      <Word>DISTINCT</Word>
+      <Word>SELECT</Word>
+      <Word>FROM</Word>
+      <Word>WHERE</Word>
+      <Word>INDEX</Word>
+      <Word>ON</Word>
+      <Word>FUNCTION</Word>
+      <Word>TEMPORARY</Word>
+      <Word>PARTITIONS</Word>
+      <Word>TABLES</Word>
+      <Word>EXTENDED</Word>
+      <Word>GROUP</Word>
+      <Word>CLUSTER</Word>
+      <Word>DISTRIBUTE</Word>
+      <Word>SORT</Word>
+      <Word>LIMIT</Word>
+      <Word>AND</Word>
+      <Word>OR</Word>
+      <Word>IN</Word>
+      <Word>JOIN</Word>
+      <Word>LEFT</Word>
+      <Word>OUTER</Word>
+      <Word>ALL</Word>
+      <Word>UNION</Word>
+      <Word>LATERAL</Word>
+      <Word>ORDER</Word>
+      <Word>SEMI</Word>
+      <Word>RIGHT</Word>
+      <Word>FULL</Word>
+      <Word>CROSS</Word>
+      <Word>create</Word>
+      <Word>drop</Word>
+      <Word>table</Word>
+      <Word>truncate</Word>
+      <Word>alter</Word>
+      <Word>show</Word>
+      <Word>describe</Word>
+      <Word>if</Word>
+      <Word>not</Word>
+      <Word>exists</Word>
+      <Word>use</Word>
+      <Word>comment</Word>
+      <Word>partitioned</Word>
+      <Word>by</Word>
+      <Word>row</Word>
+      <Word>format</Word>
+      <Word>stored</Word>
+      <Word>as</Word>
+      <Word>location</Word>
+      <Word>tblproperties</Word>
+      <Word>like</Word>
+      <Word>tinyint</Word>
+      <Word>smallint</Word>
+      <Word>int</Word>
+      <Word>bigint</Word>
+      <Word>boolean</Word>
+      <Word>float</Word>
+      <Word>double</Word>
+      <Word>string</Word>
+      <Word>binary</Word>
+      <Word>timestamp</Word>
+      <Word>decimal</Word>
+      <Word>varchar</Word>
+      <Word>char</Word>
+      <Word>array</Word>
+      <Word>map</Word>
+      <Word>struct</Word>
+      <Word>uniontype</Word>
+      <Word>delimited</Word>
+      <Word>serde</Word>
+      <Word>sequencefile</Word>
+      <Word>textfile</Word>
+      <Word>rcfile</Word>
+      <Word>orc</Word>
+      <Word>avro</Word>
+      <Word>inputformat</Word>
+      <Word>set</Word>
+      <Word>into</Word>
+      <Word>buckets</Word>
+      <Word>add</Word>
+      <Word>partition</Word>
+      <Word>rename</Word>
+      <Word>to</Word>
+      <Word>view</Word>
+      <Word>distinct</Word>
+      <Word>select</Word>
+      <Word>from</Word>
+      <Word>where</Word>
+      <Word>index</Word>
+      <Word>on</Word>
+      <Word>function</Word>
+      <Word>temporary</Word>
+      <Word>partitions</Word>
+      <Word>tables</Word>
+      <Word>extended</Word>
+      <Word>group</Word>
+      <Word>cluster</Word>
+      <Word>distribute</Word>
+      <Word>sort</Word>
+      <Word>limit</Word>
+      <Word>and</Word>
+      <Word>or</Word>
+      <Word>in</Word>
+      <Word>join</Word>
+      <Word>left</Word>
+      <Word>outer</Word>
+      <Word>all</Word>
+      <Word>union</Word>
+      <Word>lateral</Word>
+      <Word>order</Word>
+      <Word>semi</Word>
+      <Word>right</Word>
+      <Word>full</Word>
+      <Word>cross</Word>
+      <!-- ... -->
+    </Keywords>
+
+    <!-- Digits -->
+    <Rule foreground="Red">
+      \b0[xX][0-9a-fA-F]+  # hex number
+      |    \b
+      (    \d+(\.[0-9]+)?   #number with optional floating point
+      |    \.[0-9]+         #or just starting with floating point
+      )
+      ([eE][+-]?[0-9]+)? # optional exponent
+    </Rule>
+  </RuleSet>
+</SyntaxDefinition>

@@ -1,0 +1,7 @@
+D:\Projects\GitHub\HiveQuery-master\HiveThrift\bin\Debug\HiveThrift.dll
+D:\Projects\GitHub\HiveQuery-master\HiveThrift\bin\Debug\HiveThrift.pdb
+D:\Projects\GitHub\HiveQuery-master\HiveThrift\bin\Debug\Thrift.dll
+D:\Projects\GitHub\HiveQuery-master\HiveThrift\bin\Debug\Thrift.pdb
+D:\Projects\GitHub\HiveQuery-master\HiveThrift\obj\Debug\HiveThrift.csprojResolveAssemblyReference.cache
+D:\Projects\GitHub\HiveQuery-master\HiveThrift\obj\Debug\HiveThrift.dll
+D:\Projects\GitHub\HiveQuery-master\HiveThrift\obj\Debug\HiveThrift.pdb
