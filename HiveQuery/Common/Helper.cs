@@ -43,14 +43,3 @@ namespace HiveQuery.Common
         }
     }
 }
-
-namespace System
-{
-    public partial class Tuple
-    {
-        public static Tuple<T, T1> Create<T, T1>(T t, T1 t1)
-        {
-            return new Tuple<T, T1>(t, t1);
-        }
-    }
-}

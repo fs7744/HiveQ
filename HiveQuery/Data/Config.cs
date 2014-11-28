@@ -6,11 +6,11 @@ namespace HiveQuery.Data
 {
     public class Config : Observer
     {
-        public ObservableCollection<HiveConnection> Connections { get; set; }
+        public ObservableCollection<Connection> Connections { get; set; }
 
         public string UsingHiveWay { get; set; }
 
-        public List<string> OnlyShowDataBase { get; set; }
+        public List<string> OnlyShowHiveDataBase { get; set; }
 
         public List<string> LimitKeys { get; set; }
     }

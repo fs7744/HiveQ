@@ -1,5 +1,6 @@
 using HiveQuery.Common;
 using HiveQuery.Data;
+using HiveQuery.DataProvider;
 using HiveQuery.FileWriter;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Win32;
@@ -12,15 +13,19 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
+using System.Linq;
 
 namespace HiveQuery.ViewMode
 {
     public class MainViewModel : MetroViewModelBase
     {
-        private const string TitleFormat = "HIVE: {0} {1}";
+        private string m_TitleFormat = "{0} {1}";
 
         private bool IsSettingsChanged = false;
+
+        private CancellationTokenSource m_Token;
 
         #region Command
 
@@ -56,40 +61,87 @@ namespace HiveQuery.ViewMode
             set { Set(() => IsOpenSettings, ref m_IsOpenSettings, value); }
         }
 
-        private ObservableCollection<HiveConnection> m_Connections;
+        private ObservableCollection<Connection> m_Connections;
 
-        public ObservableCollection<HiveConnection> Connections
+        public ObservableCollection<Connection> Connections
         {
             get { return m_Connections; }
             set { Set(() => Connections, ref m_Connections, value); }
         }
 
-        private ObservableCollection<HiveConnection> m_SettingsConnections;
+        private ObservableCollection<Connection> m_SettingsConnections;
 
-        public ObservableCollection<HiveConnection> SettingsConnections
+        public ObservableCollection<Connection> SettingsConnections
         {
             get { return m_SettingsConnections; }
             set { Set(() => SettingsConnections, ref m_SettingsConnections, value); }
         }
 
-        private HiveConnection m_UsingConnection;
+        private Connection m_UsingConnection;
 
-        public HiveConnection UsingConnection
+        public Connection UsingConnection
         {
             get { return m_UsingConnection; }
             set
             {
-                Set(() => UsingConnection, ref m_UsingConnection, value);
-                InitDataBase(m_UsingConnection);
+                if (Set(() => UsingConnection, ref m_UsingConnection, value))
+                    InitDataBase(m_UsingConnection);
             }
         }
 
-        private string m_HiveStatement;
+        private List<string> m_DataProviders;
 
-        public string HiveStatement
+        public List<string> DataProviders
         {
-            get { return m_HiveStatement; }
-            set { Set(() => HiveStatement, ref m_HiveStatement, value); }
+            get { return m_DataProviders; }
+            set { Set(() => DataProviders, ref m_DataProviders, value); }
+        }
+
+        private string m_UsingDataProvider;
+
+        public string UsingDataProvider
+        {
+            get { return m_UsingDataProvider; }
+            set
+            {
+                if (Set(() => UsingDataProvider, ref m_UsingDataProvider, value))
+                {
+                    InitDataBase(m_UsingConnection);
+                    SolrVisibility = "Solr" == value ? Visibility.Visible : Visibility.Collapsed;
+                }
+            }
+        }
+
+        private Visibility m_SolrVisibility;
+
+        public Visibility SolrVisibility
+        {
+            get { return m_SolrVisibility; }
+            set { Set(() => SolrVisibility, ref m_SolrVisibility, value); }
+        }
+
+        private List<string> m_SolrCores;
+
+        public List<string> SolrCores
+        {
+            get { return m_SolrCores; }
+            set { Set(() => SolrCores, ref m_SolrCores, value); }
+        }
+
+        private string m_UsingSolrCore;
+
+        public string UsingSolrCore
+        {
+            get { return m_UsingSolrCore; }
+            set { Set(() => UsingSolrCore, ref m_UsingSolrCore, value); }
+        }
+
+        private string m_Statement;
+
+        public string Statement
+        {
+            get { return m_Statement; }
+            set { Set(() => Statement, ref m_Statement, value); }
         }
 
         private string m_FileName;
@@ -108,12 +160,12 @@ namespace HiveQuery.ViewMode
             set { Set(() => FilePath, ref m_FilePath, value); }
         }
 
-        private string m_HiveText;
+        private string m_TextStatement;
 
-        public string HiveText
+        public string TextStatement
         {
-            get { return m_HiveText; }
-            set { Set(() => HiveText, ref m_HiveText, value); }
+            get { return m_TextStatement; }
+            set { Set(() => TextStatement, ref m_TextStatement, value); }
         }
 
         private List<DataTable> m_Result;
@@ -155,7 +207,7 @@ namespace HiveQuery.ViewMode
         public MainViewModel()
         {
             SettingsCommand = new Command(ExecuteSettingsCommand);
-            DeleteConnectionCommand = new Command<HiveConnection>(ExecuteDeleteConnectionCommand);
+            DeleteConnectionCommand = new Command<Connection>(ExecuteDeleteConnectionCommand);
             SettingsChangedCommand = new Command(ExecuteSettingsChangedCommand);
             TextChangedCommand = new Command(ExecuteTextChangedCommand);
             OpenFileCommand = new Command(ExecuteOpenFileCommand);
@@ -163,10 +215,12 @@ namespace HiveQuery.ViewMode
             RunCommand = new Command(ExcuteRunCommand);
             StopCommand = new Command(ExcuteStopCommand);
             ExportCommand = new Command<string>(ExcuteExportCommand);
-            Connections = new ObservableCollection<HiveConnection>(ConfigManager.Instance.Config.Connections);
+            DataProviders = DataProviderFactory.Instance.GetKeys().ToList();
+            UsingDataProvider = DataProviders.FirstOrDefault();
+            Connections = new ObservableCollection<Connection>(ConfigManager.Instance.Config.Connections);
             UsingConnection = Connections.FirstOrDefault();
             SetFileName(false);
-            FileName = string.Format(TitleFormat, string.Empty, string.Empty);
+            FileName = string.Format(m_TitleFormat, string.Empty, string.Empty);
         }
 
         #endregion ctor
@@ -194,22 +248,22 @@ namespace HiveQuery.ViewMode
                 return;
             }
 
-            if (!IsLoading || !string.IsNullOrWhiteSpace(HiveText))
+            if (!IsLoading && !string.IsNullOrWhiteSpace(TextStatement))
             {
                 IsLoading = true;
-                if (UsingConnection.IsLimit && !CheckLimit(HiveText, ConfigManager.Instance.Config.LimitKeys))
+                if (UsingConnection.IsLimitHive && !CheckLimit(TextStatement, ConfigManager.Instance.Config.LimitKeys))
                 {
                     IsLoading = false;
                     return;
                 }
-                var token = new CancellationTokenSource();
+                m_Token = new CancellationTokenSource();
                 Task.Factory.StartNew(() =>
                 {
-                    var hive = string.IsNullOrEmpty(HiveStatement) ? HiveText : HiveStatement;
-                    if (!string.IsNullOrEmpty(hive))
-                        Result = HiveManager.Instance.Execute(hive, UsingConnection.IP, UsingConnection.Port, token);
+                    var statement = string.IsNullOrEmpty(Statement) ? TextStatement : Statement;
+                    if (!string.IsNullOrEmpty(statement))
+                        Result = DataProviderFactory.Instance.Execute(UsingDataProvider, statement, UsingConnection, m_Token, UsingSolrCore);
                     IsLoading = false;
-                }, token.Token);
+                }, m_Token.Token);
             }
         }
 
@@ -217,7 +271,8 @@ namespace HiveQuery.ViewMode
         {
             if (IsLoading)
             {
-                HiveManager.Instance.Cancel();
+                if (m_Token != null)
+                    m_Token.Cancel();
                 IsLoading = false;
             }
         }
@@ -225,7 +280,7 @@ namespace HiveQuery.ViewMode
         private void ExcuteSavedCommand()
         {
             Stream stream = null;
-            if (!string.IsNullOrWhiteSpace(HiveText))
+            if (!string.IsNullOrWhiteSpace(TextStatement))
             {
                 if (string.IsNullOrWhiteSpace(FilePath))
                 {
@@ -241,7 +296,7 @@ namespace HiveQuery.ViewMode
                 if (string.IsNullOrWhiteSpace(FilePath)) return;
                 using (var writer = new StreamWriter(stream))
                 {
-                    writer.Write(HiveText);
+                    writer.Write(TextStatement);
                     writer.Flush();
                 }
                 SetFileName(false);
@@ -257,7 +312,7 @@ namespace HiveQuery.ViewMode
                 if (string.IsNullOrWhiteSpace(FilePath)) return;
                 using (var reader = new StreamReader(ofd.OpenFile()))
                 {
-                    HiveText = reader.ReadToEnd();
+                    TextStatement = reader.ReadToEnd();
                 }
                 SetFileName(false);
             }
@@ -275,7 +330,7 @@ namespace HiveQuery.ViewMode
                 var result = await ShowMessageAsync(string.Empty, "The settings changed, do you want to save ?");
                 if (result == MessageDialogResult.Affirmative)
                 {
-                    SettingsConnections.Where(i => string.IsNullOrWhiteSpace(i.IP)
+                    SettingsConnections.Where(i => string.IsNullOrWhiteSpace(i.HiveIP)
                         && string.IsNullOrWhiteSpace(i.Name)).ToList()
                         .ForEach(i => SettingsConnections.Remove(i));
                     ConfigManager.Instance.Save(SettingsConnections);
@@ -300,7 +355,7 @@ namespace HiveQuery.ViewMode
             }
         }
 
-        private void ExecuteDeleteConnectionCommand(HiveConnection connection)
+        private void ExecuteDeleteConnectionCommand(Connection connection)
         {
             SettingsConnections.Remove(connection);
         }
@@ -309,18 +364,25 @@ namespace HiveQuery.ViewMode
 
         #region private Method
 
-        private void InitDataBase(HiveConnection conn)
+        private void InitDataBase(Connection conn)
         {
-            if (m_UsingConnection == null) return;
+            if (m_UsingConnection == null || string.IsNullOrWhiteSpace(UsingDataProvider)) return;
             Task.Factory.StartNew(() =>
             {
-                var list = HiveManager.Instance.GetKeyInfo();
-                CompletionData = list;
-                list = list.ToList();
-                CompletionDataBase = HiveManager.Instance.GetDataBaseInfo(conn.IP, conn.Port, ConfigManager.Instance.Config.OnlyShowDataBase);
-                if (!CompletionDataBase.IsEmpty())
-                    list.AddRange(CompletionDataBase.Select(i => new CompletionData(i.Item1)));
-                CompletionData = list;
+                var provider = DataProviderFactory.Instance.GetProvider(UsingDataProvider);
+                if (provider is HiveDataProvider)
+                {
+                    var data = (provider as HiveDataProvider).GetCompletionData(UsingConnection);
+                    CompletionData = data.Item1;
+                    CompletionDataBase = data.Item2;
+                }
+                else if (provider is SolrDataProvider)
+                {
+                    SolrCores = (provider as SolrDataProvider).GetSolrCores(UsingConnection);
+                    UsingSolrCore = string.Empty;
+                    if (!SolrCores.IsEmpty())
+                        UsingSolrCore = SolrCores.FirstOrDefault();
+                }
             });
         }
 
@@ -356,7 +418,7 @@ namespace HiveQuery.ViewMode
 
         private void SetFileName(bool isNoSave)
         {
-            FileName = string.Format(TitleFormat, isNoSave ? "*" : string.Empty, FilePath);
+            FileName = string.Format(m_TitleFormat, isNoSave ? "*" : string.Empty, FilePath);
         }
 
         #endregion private Method

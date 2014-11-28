@@ -68,6 +68,9 @@
     <Reference Include="MahApps.Metro">
       <HintPath>..\packages\MahApps.Metro.0.13.1.0\lib\net45\MahApps.Metro.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
     <Reference Include="NPOI">
       <HintPath>..\packages\NPOI.2.0.6\lib\net40\NPOI.dll</HintPath>
     </Reference>
@@ -82,6 +85,9 @@
     </Reference>
     <Reference Include="Sigil">
       <HintPath>..\packages\Sigil.4.2.1\lib\net45\Sigil.dll</HintPath>
+    </Reference>
+    <Reference Include="SolrNet">
+      <HintPath>..\packages\SolrNet.0.4.0-beta2\lib\SolrNet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -117,9 +123,13 @@
     <Compile Include="Common\HiveManager.cs" />
     <Compile Include="Common\MetroViewModelBase.cs" />
     <Compile Include="Common\MVVMTextEditor.cs" />
+    <Compile Include="DataProvider\DataProviderBase.cs" />
+    <Compile Include="DataProvider\DataProviderFactory.cs" />
+    <Compile Include="DataProvider\HiveDataProvider.cs" />
+    <Compile Include="DataProvider\SolrDataProvider.cs" />
     <Compile Include="Data\CompletionData.cs" />
     <Compile Include="Data\Config.cs" />
-    <Compile Include="Data\HiveConnection.cs" />
+    <Compile Include="Data\Connection.cs" />
     <Page Include="View\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -129,6 +139,7 @@
     <Compile Include="FileWriter\IFileWriter.cs" />
     <Compile Include="FileWriter\XLSWriter.cs" />
     <Compile Include="FileWriter\XLSXWriter.cs" />
+    <Compile Include="SolrNet\Core.cs" />
     <Compile Include="ViewMode\MainViewModel.cs" />
     <Compile Include="View\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
@@ -169,6 +180,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <None Include="SolrNet.chm" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HiveThrift\HiveThrift.csproj">

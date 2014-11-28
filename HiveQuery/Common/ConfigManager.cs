@@ -29,7 +29,7 @@ namespace HiveQuery.Common
             File.WriteAllText(m_jsonPath, JSON.Serialize(Config));
         }
 
-        public void Save(ObservableCollection<HiveConnection> settingsConnections)
+        public void Save(ObservableCollection<Connection> settingsConnections)
         {
             Config.Connections = settingsConnections;
             Save();

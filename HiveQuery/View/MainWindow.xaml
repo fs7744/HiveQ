@@ -85,17 +85,25 @@
                 </Menu>
                 <ToolBar Margin="10,0,0,0">
                     <controls:SplitButton MinWidth="100" Icon="{DynamicResource appbar_database}" Margin="8,0,0,0"
-                                      ItemsSource="{Binding Connections}" DisplayMemberPath="Name"
+                                      ItemsSource="{Binding DataProviders}" ToolTip="DataBase"
+                                      SelectedItem="{Binding UsingDataProvider,Mode=TwoWay}" />
+                    <controls:SplitButton MinWidth="100"  Margin="8,0,0,0" Icon="{DynamicResource appbar_cogs}"
+                                      ItemsSource="{Binding Connections}" DisplayMemberPath="Name" ToolTip="Environment"
                                       SelectedItem="{Binding UsingConnection,Mode=TwoWay}" />
                     <Button Content="{DynamicResource appbar_control_play}" ToolTip="Run (F5)" Margin="16,0,8,0"
                             Command="{Binding RunCommand}" />
                     <Button Content="{DynamicResource appbar_control_stop}" ToolTip="Stop (F6)"
                             Command="{Binding StopCommand}" />
+
+                    <controls:SplitButton MinWidth="100" Margin="50,0,0,0" Icon="{DynamicResource appbar_box_layered}"
+                                      ItemsSource="{Binding SolrCores}" ToolTip="Solr Core" 
+                                      Visibility="{Binding SolrVisibility,Mode=TwoWay}"
+                                      SelectedItem="{Binding UsingSolrCore,Mode=TwoWay}" />
                 </ToolBar>
             </StackPanel>
             <common:MVVMTextEditor x:Name="textEditor" FontFamily="Consolas" FontSize="10pt" SyntaxHighlighting="Hive"
-                               ShowLineNumbers="True" WordWrap="True" SelectedTextInfo="{Binding HiveStatement,Mode=TwoWay}"
-                               TextInfo="{Binding HiveText,Mode=TwoWay}" CompletionKey="{Binding CompletionData,Mode=TwoWay}" 
+                               ShowLineNumbers="True" WordWrap="True" SelectedTextInfo="{Binding Statement,Mode=TwoWay}"
+                               TextInfo="{Binding TextStatement,Mode=TwoWay}" CompletionKey="{Binding CompletionData,Mode=TwoWay}" 
                                CompletionDataBase="{Binding CompletionDataBase,Mode=TwoWay}">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="TextChanged">

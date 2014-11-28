@@ -9,6 +9,7 @@ using System.Threading;
 
 namespace HiveQuery.Common
 {
+
     public sealed class HiveManager
     {
         public static readonly HiveManager Instance = new HiveManager();

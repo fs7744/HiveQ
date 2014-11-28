@@ -8,6 +8,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Linq;
 using HiveQuery.Data;
+using HiveQuery.DataProvider;
 
 namespace HiveQuery.View
 {
@@ -31,7 +32,7 @@ namespace HiveQuery.View
             using (var stream = thisassembly.GetManifestResourceStream("HiveQuery.Hive.xshd"))
             {
                 var doc = XDocument.Load(stream);
-                HiveManager.Instance.AddKeyWords(doc.Descendants(XNamespace.Get("http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008") + "Word")
+                HiveDataProvider.KeyWords.AddRange(doc.Descendants(XNamespace.Get("http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008") + "Word")
                     .Select(i => i.Value.ToUpper()).Distinct().Select(i=> new CompletionData(i)));
             }
             //ConfigManager.Instance.Config = new Data.Config();
