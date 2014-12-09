@@ -13,9 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
-using System.Linq;
 
 namespace HiveQuery.ViewMode
 {
@@ -107,33 +105,8 @@ namespace HiveQuery.ViewMode
                 if (Set(() => UsingDataProvider, ref m_UsingDataProvider, value))
                 {
                     InitDataBase(m_UsingConnection);
-                    SolrVisibility = "Solr" == value ? Visibility.Visible : Visibility.Collapsed;
                 }
             }
-        }
-
-        private Visibility m_SolrVisibility;
-
-        public Visibility SolrVisibility
-        {
-            get { return m_SolrVisibility; }
-            set { Set(() => SolrVisibility, ref m_SolrVisibility, value); }
-        }
-
-        private List<string> m_SolrCores;
-
-        public List<string> SolrCores
-        {
-            get { return m_SolrCores; }
-            set { Set(() => SolrCores, ref m_SolrCores, value); }
-        }
-
-        private string m_UsingSolrCore;
-
-        public string UsingSolrCore
-        {
-            get { return m_UsingSolrCore; }
-            set { Set(() => UsingSolrCore, ref m_UsingSolrCore, value); }
         }
 
         private string m_Statement;
@@ -261,7 +234,7 @@ namespace HiveQuery.ViewMode
                 {
                     var statement = string.IsNullOrEmpty(Statement) ? TextStatement : Statement;
                     if (!string.IsNullOrEmpty(statement))
-                        Result = DataProviderFactory.Instance.Execute(UsingDataProvider, statement, UsingConnection, m_Token, UsingSolrCore);
+                        Result = DataProviderFactory.Instance.Execute(UsingDataProvider, statement, UsingConnection, m_Token);
                     IsLoading = false;
                 }, m_Token.Token);
             }
@@ -375,13 +348,6 @@ namespace HiveQuery.ViewMode
                     var data = (provider as HiveDataProvider).GetCompletionData(UsingConnection);
                     CompletionData = data.Item1;
                     CompletionDataBase = data.Item2;
-                }
-                else if (provider is SolrDataProvider)
-                {
-                    SolrCores = (provider as SolrDataProvider).GetSolrCores(UsingConnection);
-                    UsingSolrCore = string.Empty;
-                    if (!SolrCores.IsEmpty())
-                        UsingSolrCore = SolrCores.FirstOrDefault();
                 }
             });
         }

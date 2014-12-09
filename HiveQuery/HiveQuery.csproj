@@ -140,6 +140,7 @@
     <Compile Include="FileWriter\XLSWriter.cs" />
     <Compile Include="FileWriter\XLSXWriter.cs" />
     <Compile Include="SolrNet\Core.cs" />
+    <Compile Include="SolrNet\SimpleSolrConnection.cs" />
     <Compile Include="ViewMode\MainViewModel.cs" />
     <Compile Include="View\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>

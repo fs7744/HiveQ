@@ -1,9 +1,8 @@
 ﻿using HiveQuery.Common;
 using HiveQuery.Data;
+using HiveQuery.SolrNet;
 using Microsoft.Practices.ServiceLocation;
 using SolrNet;
-using SolrNet.Commands.Parameters;
-using SolrNet.DSL;
 using SolrNet.Impl;
 using System;
 using System.Collections.Generic;
@@ -15,18 +14,20 @@ namespace HiveQuery.DataProvider
 {
     public class SolrDataProvider : DataProviderBase
     {
+        public SolrDataProvider()
+        {
+            Startup.Container.Clear();
+            Startup.InitContainer();
+        }
+
         private DataTable Execute(string query, string url)
         {
             DataTable result = null;
             try
             {
-                Startup.Container.Clear();
-                Startup.InitContainer();
-                Startup.Init<Dictionary<string, object>>(url);
-                var solr = ServiceLocator.Current.GetInstance<ISolrOperations<Dictionary<string, object>>>();
-                var schema = solr.GetSchema();
-                var data = solr.Query(new SolrQuery(query), new QueryOptions() { Rows = int.MaxValue });
-                result = LoadTable(data, schema == null || schema.SolrFields.IsEmpty() ? new List<string>() : schema.SolrFields.Select(i => i.Name));
+                var conn = new SimpleSolrConnection(url);
+                var data = conn.Execute(query);
+                result = LoadTable(data);
             }
             catch (Exception ex)
             {
@@ -38,17 +39,13 @@ namespace HiveQuery.DataProvider
             return result;
         }
 
-        private DataTable LoadTable(SolrQueryResults<Dictionary<string, object>> result, IEnumerable<string> columns)
+        private DataTable LoadTable(SolrQueryResults<Dictionary<string, object>> result)
         {
             DataTable table = new DataTable();
             if (!result.IsEmpty())
             {
                 var first =
                 table.Columns.Add(Index);
-                foreach (var key in columns)
-                {
-                    table.Columns.Add(key);
-                }
 
                 int index = 0;
                 foreach (var dic in result)
@@ -57,6 +54,8 @@ namespace HiveQuery.DataProvider
                     row[Index] = ++index;
                     foreach (var key in dic.Keys)
                     {
+                        if (!table.Columns.Contains(key))
+                            table.Columns.Add(key);
                         row[key] = dic[key];
                     }
                     table.Rows.Add(row);
@@ -72,24 +71,11 @@ namespace HiveQuery.DataProvider
             var result = new List<DataTable>();
             if (m_Token == null || !m_Token.IsCancellationRequested)
             {
-                var url = string.Format("{0}/{1}", conn.SolrUrl, data.ToString());
-                var table = Execute(query, url);
+                var table = Execute(query, conn.SolrUrl);
                 if (table != null)
                     result.Add(table);
             }
             return result;
-        }
-
-        public List<string> GetSolrCores(Connection conn)
-        {
-            Startup.Container.Clear();
-            Startup.InitContainer();
-            Startup.Container.Register<ISolrStatusResponseParser>(c => new SolrStatusResponseParser());
-            var headerParser = ServiceLocator.Current.GetInstance<ISolrHeaderResponseParser>();
-            var statusParser = ServiceLocator.Current.GetInstance<ISolrStatusResponseParser>();
-            var solrCoreAdmin = new SolrCoreAdmin(new SolrConnection(conn.SolrUrl), headerParser, statusParser);
-            var coreStatus = solrCoreAdmin.Status();
-            return coreStatus.IsEmpty() ? new List<string>() : coreStatus.Select(i => i.Name).ToList();
         }
     }
 }

@@ -95,10 +95,10 @@
                     <Button Content="{DynamicResource appbar_control_stop}" ToolTip="Stop (F6)"
                             Command="{Binding StopCommand}" />
 
-                    <controls:SplitButton MinWidth="100" Margin="50,0,0,0" Icon="{DynamicResource appbar_box_layered}"
+                    <!--<controls:SplitButton MinWidth="100" Margin="50,0,0,0" Icon="{DynamicResource appbar_box_layered}"
                                       ItemsSource="{Binding SolrCores}" ToolTip="Solr Core" 
                                       Visibility="{Binding SolrVisibility,Mode=TwoWay}"
-                                      SelectedItem="{Binding UsingSolrCore,Mode=TwoWay}" />
+                                      SelectedItem="{Binding UsingSolrCore,Mode=TwoWay}" />-->
                 </ToolBar>
             </StackPanel>
             <common:MVVMTextEditor x:Name="textEditor" FontFamily="Consolas" FontSize="10pt" SyntaxHighlighting="Hive"
