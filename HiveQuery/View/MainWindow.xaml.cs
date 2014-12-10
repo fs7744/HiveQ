@@ -58,7 +58,7 @@ namespace HiveQuery.View
                 grid.CanUserDeleteRows = false;
                 grid.IsReadOnly = true;
                 grid.SetValue(Grid.RowProperty, count);
-                grid.Margin = new Thickness(0, 5, 0, 0);
+                //grid.Margin = new Thickness(0, 5, 0, 0);
                 ResultGrid.Children.Add(grid);
                 grid.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
                 grid.HorizontalScrollBarVisibility = ScrollBarVisibility.Visible;
@@ -83,11 +83,11 @@ namespace HiveQuery.View
                 {
                     ShowsPreview = true,
                     BorderBrush = Brushes.Black,
-                    Height = 2,
+                    Height = 1,
                     HorizontalAlignment = HorizontalAlignment.Stretch,
                     BorderThickness = new Thickness(1),
                     IsEnabled = true,
-                    VerticalAlignment = VerticalAlignment.Top
+                    VerticalAlignment = VerticalAlignment.Top,
                 };
                 splitter.SetValue(Grid.RowProperty, ++count);
                 ResultGrid.Children.Add(splitter);
