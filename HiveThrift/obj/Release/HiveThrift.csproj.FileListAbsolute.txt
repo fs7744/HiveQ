@@ -1,7 +1,0 @@
-D:\MyWork\TRgit\hivequery\HiveThrift\bin\Release\HiveThrift.dll
-D:\MyWork\TRgit\hivequery\HiveThrift\bin\Release\HiveThrift.pdb
-D:\MyWork\TRgit\hivequery\HiveThrift\bin\Release\Thrift.dll
-D:\MyWork\TRgit\hivequery\HiveThrift\bin\Release\Thrift.pdb
-D:\MyWork\TRgit\hivequery\HiveThrift\obj\Release\HiveThrift.csprojResolveAssemblyReference.cache
-D:\MyWork\TRgit\hivequery\HiveThrift\obj\Release\HiveThrift.dll
-D:\MyWork\TRgit\hivequery\HiveThrift\obj\Release\HiveThrift.pdb
