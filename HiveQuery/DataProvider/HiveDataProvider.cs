@@ -47,13 +47,23 @@ namespace HiveQuery.DataProvider
 
         private DataTable Execute(string query, HiveClient client)
         {
-            var result = client.Execute(query);
+            Exception error = null;
+            HiveResult result = null;
+            try
+            {
+                result = client.Execute(query);
+                error = result.Error;
+            }
+            catch (Exception ex)
+            {
+                error = ex ;
+            }
 
-            if (result.Error != null)
+            if (error != null)
             {
                 var table = new DataTable();
                 table.Columns.Add("Error");
-                table.Rows.Add(result.Error.Message);
+                table.Rows.Add(error.Message);
                 return table;
             }
             else
@@ -111,7 +121,7 @@ namespace HiveQuery.DataProvider
 
         private List<string> GetQuerys(string query)
         {
-            query = query.Replace("\r\n", " ");
+            query = query.Replace("\r\n", "");
             query = query.Replace("\\;", "[-I-]");
             var querys = query.Split(";".ToArray(), StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < querys.Length; i++)

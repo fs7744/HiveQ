@@ -1,1 +1,0 @@
-﻿{"Connections":[{"IsLimit":true,"Port":10000,"IP":"172.16.13.126","Name":"Gdev"}],"UsingHiveWay":"Hive","OnlyShowDataBase":["eims"],"LimitKeys":["create","DROP","TRUNCATE","ALTER"]}

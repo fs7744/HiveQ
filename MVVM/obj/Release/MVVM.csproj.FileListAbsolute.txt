@@ -1,0 +1,6 @@
+D:\MyWork\TRgit\hivequery\MVVM\bin\Release\MVVM.dll
+D:\MyWork\TRgit\hivequery\MVVM\bin\Release\MVVM.pdb
+D:\MyWork\TRgit\hivequery\MVVM\bin\Release\System.Windows.Interactivity.dll
+D:\MyWork\TRgit\hivequery\MVVM\obj\Release\MVVM.csprojResolveAssemblyReference.cache
+D:\MyWork\TRgit\hivequery\MVVM\obj\Release\MVVM.dll
+D:\MyWork\TRgit\hivequery\MVVM\obj\Release\MVVM.pdb

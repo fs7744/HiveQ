@@ -4,16 +4,16 @@
 winexe
 C#
 .cs
-D:\MyWork\TRgit\hivequery\HiveQuery\obj\Debug\
+D:\MyWork\TRgit\hivequery\HiveQuery\obj\Release\
 HiveQuery
 none
 false
-DEBUG;TRACE
+TRACE
 D:\MyWork\TRgit\hivequery\HiveQuery\View\App.xaml
 1-1711142684
 
-32-1869514004
-281593447302
+28-600121726
+281842997179
 View\MainWindow.xaml;
 
 False

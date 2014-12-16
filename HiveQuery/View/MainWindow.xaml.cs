@@ -49,6 +49,7 @@ namespace HiveQuery.View
             cellTrigger.Setters.Add(new Setter(ForegroundProperty, Brushes.DarkBlue));
             cellTrigger.Setters.Add(new Setter(BackgroundProperty, Brushes.LightGreen));
             cellStyle.Triggers.Add(cellTrigger);
+
             model.Result.ForEach(i =>
             {
                 DataGrid grid = new DataGrid();
@@ -58,7 +59,7 @@ namespace HiveQuery.View
                 grid.CanUserDeleteRows = false;
                 grid.IsReadOnly = true;
                 grid.SetValue(Grid.RowProperty, count);
-                //grid.Margin = new Thickness(0, 5, 0, 0);
+                grid.Margin = new Thickness(0, 1, 0, 0);
                 ResultGrid.Children.Add(grid);
                 grid.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
                 grid.HorizontalScrollBarVisibility = ScrollBarVisibility.Visible;
