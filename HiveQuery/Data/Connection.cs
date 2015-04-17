@@ -43,5 +43,21 @@ namespace HiveQuery.Data
             get { return m_IsLimitHive; }
             set { Set(() => IsLimitHive, ref m_IsLimitHive, value); }
         }
+
+        private string m_UserName;
+
+        public string UserName
+        {
+            get { return m_UserName; }
+            set { Set(() => UserName, ref m_UserName, value); }
+        }
+
+        private string m_Password;
+
+        public string Password
+        {
+            get { return m_Password; }
+            set { Set(() => Password, ref m_Password, value); }
+        }
     }
 }

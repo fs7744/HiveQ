@@ -1,80 +1,45 @@
+using Hive;
 using System;
 using System.Collections.Generic;
-using Thrift.Protocol;
-using Thrift.Transport;
+using System.Linq;
 
 namespace Hive2
 {
-    public class HiveClient
+    public class HiveClient : IHiveClient
     {
-        private TSaslClientTransport transport;
-        private TCLIService.Client client;
-        private TBinaryProtocol protocol;
+        private Connection m_Connection;
 
-        protected HiveClient(string host, int port, string userName = "None", string password = "None")
+        public HiveClient(string host, int port, string userName = "None", string password = "None")
         {
-            var socket = new TSocket(host, port);
-            transport = new TSaslClientTransport(socket, userName, password);
-            protocol = new TBinaryProtocol(transport);
-            client = new TCLIService.Client(protocol);
+            m_Connection = new Connection(host, port, userName, password);
         }
 
         public void Open()
         {
-            if (transport != null && !transport.IsOpen)
-                transport.Open();
+            m_Connection.Open();
         }
 
         public HiveResult Execute(string query)
         {
             HiveResult result = new HiveResult();
-
             try
             {
-                TOpenSessionReq openReq = new TOpenSessionReq();
-                TOpenSessionResp openResp = client.OpenSession(openReq);
-                CheckStatus(openResp.Status);
-
-                TSessionHandle sessHandle = openResp.SessionHandle;
-
-                openReq = new TOpenSessionReq();
-                openResp = client.OpenSession(openReq);
-                CheckStatus(openResp.Status);
-
-                sessHandle = openResp.SessionHandle;
-
-                TExecuteStatementReq execReq = new TExecuteStatementReq();
-                execReq.SessionHandle = sessHandle;
-                execReq.Statement = query;
-                TExecuteStatementResp execResp = client.ExecuteStatement(execReq);
-                CheckStatus(execResp.Status);
-
-                TOperationHandle stmtHandle = execResp.OperationHandle;
-                TFetchResultsReq fetchReq = new TFetchResultsReq();
-                fetchReq.MaxRows = int.MaxValue;
-                fetchReq.OperationHandle = stmtHandle;
-                fetchReq.Orientation = TFetchOrientation.FETCH_LAST;
-                TFetchResultsResp resultsResp = client.FetchResults(fetchReq);
-                CheckStatus(resultsResp.Status);
-
-                TRowSet resultsSet = resultsResp.Results;
-                result.Rows = resultsSet.Rows;
-
-                TGetResultSetMetadataReq schemasReq = new TGetResultSetMetadataReq();
-                schemasReq.OperationHandle = stmtHandle;
-                TGetResultSetMetadataResp schemasResp = client.GetResultSetMetadata(schemasReq);
-                CheckStatus(schemasResp.Status);
-                result.Schemas = schemasResp.Schema.Columns;
-
-                TCloseOperationReq closeReq = new TCloseOperationReq();
-                closeReq.OperationHandle = stmtHandle;
-                TCloseOperationResp closeOperationResp = client.CloseOperation(closeReq);
-                CheckStatus(closeOperationResp.Status);
-
-                TCloseSessionReq closeSessionReq = new TCloseSessionReq();
-                closeSessionReq.SessionHandle = sessHandle;
-                TCloseSessionResp closeSessionResp = client.CloseSession(closeSessionReq);
-                CheckStatus(closeSessionResp.Status);
+                using (var cur = m_Connection.GetCursor())
+                {
+                    cur.Execute(query);
+                    var data = cur.FetchMany(int.MaxValue);
+                    if (!data.IsEmpty())
+                    {
+                        result.Rows = data.Select(i =>
+                        {
+                            var dict = i as IDictionary<string, object>;
+                            return dict == null ? string.Empty
+                                : string.Join("\t", dict.Values.Select(j => j == null ? string.Empty : j.ToString()));
+                        }).ToList();
+                        result.Schemas = data.First().Cast<KeyValuePair<string, object>>()
+                            .Select(i => new FieldSchema() { Name = i.Key }).ToList();
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -84,29 +49,65 @@ namespace Hive2
             return result;
         }
 
-        private static void CheckStatus(TStatus status)
-        {
-            if ((TStatusCode)status.ErrorCode == TStatusCode.ERROR_STATUS || (TStatusCode)status.ErrorCode == TStatusCode.INVALID_HANDLE_STATUS)
-            {
-                throw new Exception(status.ErrorMessage);
-            }
-        }
-
         public void Close()
         {
-            if (transport != null && transport.IsOpen)
-                transport.Close();
+            m_Connection.Close();
         }
 
         public static string Way { get { return "Hive2"; } }
-    }
 
-    public class HiveResult
-    {
-        public Exception Error { get; set; }
+        public List<string> Get_all_databases()
+        {
+            return DoGetCommonValue(cur => cur.Execute("show databases"), GetData);
+        }
 
-        public List<TColumnDesc> Schemas { get; set; }
+        public List<string> Get_all_tables(string database)
+        {
+            return DoGetCommonValue(cur =>
+            {
+                cur.Execute(string.Format("use {0}", database));
+                cur.Execute("show tables");
+            }, GetData);
+        }
 
-        public List<TRow> Rows { get; set; }
+        public List<FieldSchema> Get_schema(string database, string table)
+        {
+            return DoGetCommonValue(cur =>
+            {
+                cur.Execute(string.Format("use {0}", database));
+                cur.Execute(string.Format("describe {0}", table));
+            }, dict =>
+            { 
+                var result = new List<string>();
+                if(dict.ContainsKey("col_name"))
+                    result.Add(dict["col_name"].ToString());
+                return result;
+            }).Select(i => new FieldSchema() { Name = i }).ToList();
+        }
+
+        private List<string> DoGetCommonValue(Action<Cursor> action, Func<IDictionary<string, object>, List<string>> getData)
+        {
+            List<string> result = new List<string>();
+            using (var cur = m_Connection.GetCursor())
+            {
+                action(cur);
+                var data = cur.FetchMany(int.MaxValue);
+                if (!data.IsEmpty())
+                {
+                    result = data.SelectMany(i =>
+                    {
+                        var dict = i as IDictionary<string, object>;
+                        return dict == null ? new List<string>()
+                            : getData(dict);
+                    }).ToList();
+                }
+            }
+            return result;
+        }
+
+        private List<string> GetData(IDictionary<string, object> dict)
+        {
+            return dict.Values.Select(j => j == null ? string.Empty : j.ToString()).ToList();
+        }
     }
 }

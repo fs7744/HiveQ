@@ -6,7 +6,22 @@ using Thrift.Transport;
 
 namespace Hive
 {
-    public class HiveClient
+    public interface IHiveClient
+    {
+        void Open();
+
+        HiveResult Execute(string query);
+
+        List<string> Get_all_databases();
+
+        List<string> Get_all_tables(string database);
+
+        List<FieldSchema> Get_schema(string database, string table);
+
+        void Close();
+    }
+
+    public class HiveClient : IHiveClient
     {
         private TBufferedTransport transport;
 
@@ -67,6 +82,21 @@ namespace Hive
         }
 
         public static string Way { get { return "Hive"; } }
+
+        public List<string> Get_all_databases()
+        {
+            return Client.get_all_databases();
+        }
+
+        public List<string> Get_all_tables(string database)
+        {
+            return Client.get_all_tables(database);
+        }
+
+        public List<FieldSchema> Get_schema(string database, string table)
+        {
+            return Client.get_schema(database, table);
+        }
     }
 
     public class HiveResult

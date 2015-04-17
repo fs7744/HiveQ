@@ -56,6 +56,10 @@
     <StartupObject>HiveQuery.View.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HiveThrift, Version=0.1.2.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\HiveThrift.0.1.2.1\lib\net45\HiveThrift.dll</HintPath>
+    </Reference>
     <Reference Include="ICSharpCode.AvalonEdit">
       <HintPath>..\packages\AvalonEdit.4.4.2.9744\lib\Net40\ICSharpCode.AvalonEdit.dll</HintPath>
     </Reference>
@@ -125,6 +129,7 @@
     <Compile Include="Common\MVVMTextEditor.cs" />
     <Compile Include="DataProvider\DataProviderBase.cs" />
     <Compile Include="DataProvider\DataProviderFactory.cs" />
+    <Compile Include="DataProvider\Hive2DataProvider.cs" />
     <Compile Include="DataProvider\HiveDataProvider.cs" />
     <Compile Include="DataProvider\SolrDataProvider.cs" />
     <Compile Include="Data\CompletionData.cs" />
@@ -184,10 +189,6 @@
     <None Include="SolrNet.chm" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HiveThrift\HiveThrift.csproj">
-      <Project>{edb147a6-057a-482b-885c-491004775ba9}</Project>
-      <Name>HiveThrift</Name>
-    </ProjectReference>
     <ProjectReference Include="..\MVVM\MVVM.csproj">
       <Project>{3bc4530c-7c0c-4d94-95e8-3b9f63aea726}</Project>
       <Name>MVVM</Name>

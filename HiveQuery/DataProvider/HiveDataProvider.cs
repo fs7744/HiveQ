@@ -13,24 +13,28 @@ namespace HiveQuery.DataProvider
     {
         public static List<CompletionData> KeyWords = new List<CompletionData>();
 
+        public virtual IHiveClient CreateClient(Connection conn)
+        {
+            return new HiveClient(conn.HiveIP, conn.HivePort);
+        }
+
         private List<Tuple<string, List<CompletionData>>> GetDataBaseInfo(Connection conn, IEnumerable<string> onlyShowDataBase)
         {
             List<Tuple<string, List<CompletionData>>> result = new List<Tuple<string, List<CompletionData>>>();
-            var client = new HiveClient(conn.HiveIP, conn.HivePort);
+            IHiveClient client = CreateClient(conn);
 
             try
             {
                 client.Open();
-                var op = client.Client;
                 var databases = onlyShowDataBase != null && onlyShowDataBase.Count() > 0
-                    ? onlyShowDataBase : op.get_all_databases();
+                    ? onlyShowDataBase : client.Get_all_databases();
                 foreach (var database in databases)
                 {
-                    var tables = op.get_all_tables(database);
+                    var tables = client.Get_all_tables(database);
                     result.Add(Tuple.Create(database, tables.Select(i => new CompletionData(i)).ToList()));
                     foreach (var table in tables)
                     {
-                        var fileds = op.get_schema(database, table);
+                        var fileds = client.Get_schema(database, table);
                         if (!fileds.IsEmpty())
                             result.Add(Tuple.Create(table, fileds.Select(i => new CompletionData(i.Name)).ToList()));
                     }
@@ -45,7 +49,7 @@ namespace HiveQuery.DataProvider
             return result;
         }
 
-        private DataTable Execute(string query, HiveClient client)
+        private DataTable Execute(string query, IHiveClient client)
         {
             Exception error = null;
             HiveResult result = null;
@@ -90,6 +94,7 @@ namespace HiveQuery.DataProvider
                     {
                         str += "_";
                     }
+                    str = str.Replace(".", "-");
                     table.Columns.Add(str);
                 });
             }
@@ -142,7 +147,7 @@ namespace HiveQuery.DataProvider
                 var querys = GetQuerys(query);
                 if (!querys.IsEmpty())
                 {
-                    var client = new HiveClient(conn.HiveIP, conn.HivePort);
+                    var client = CreateClient(conn);
                     client.Open();
                     try
                     {

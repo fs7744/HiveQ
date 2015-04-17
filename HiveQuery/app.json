@@ -1,1 +1,1 @@
-﻿{"Connections":[{"IsLimitHive":true,"HivePort":10000,"HiveIP":"172.16.13.126","Name":"Gdev","SolrUrl":"http://10.16.83.61:8985/master"}],"UsingHiveWay":"Hive","OnlyShowHiveDataBase":["eims"],"LimitKeys":["create","DROP","TRUNCATE","ALTER"]}
+﻿{"Connections":[{"IsLimitHive":true,"HivePort":10000,"SolrUrl":"http://xx/master","UserName":"xx","Password":"xxx","HiveIP":"xx","Name":"Gdev"}],"OnlyShowHiveDataBase":["xx"],"LimitKeys":["create","DROP","TRUNCATE","ALTER"],"UsingHiveWay":"Hive"}

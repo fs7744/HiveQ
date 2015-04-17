@@ -16,6 +16,7 @@ namespace HiveQuery.DataProvider
         {
             m_Providers = new Dictionary<string, DataProviderBase>();
             m_Providers.Add("Hive", new HiveDataProvider());
+            m_Providers.Add("Hive2", new Hive2DataProvider());
             m_Providers.Add("Solr", new SolrDataProvider());
         }
 
