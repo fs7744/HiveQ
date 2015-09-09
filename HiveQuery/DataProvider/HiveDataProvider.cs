@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace HiveQuery.DataProvider
 {
@@ -60,7 +61,7 @@ namespace HiveQuery.DataProvider
             }
             catch (Exception ex)
             {
-                error = ex ;
+                error = ex;
             }
 
             if (error != null)
@@ -136,9 +137,9 @@ namespace HiveQuery.DataProvider
             return querys.ToList();
         }
 
-        public override List<DataTable> Execute(string query, Connection conn, CancellationTokenSource token = null, object data = null)
+        public async override Task<List<DataTable>> Execute(string query, Connection conn, CancellationTokenSource token = null, object data = null)
         {
-            base.Execute(query, conn, token, data);
+            await base.Execute(query, conn, token, data);
             var result = new List<DataTable>();
             m_Token = token;
 

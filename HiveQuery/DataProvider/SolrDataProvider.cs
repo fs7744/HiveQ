@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace HiveQuery.DataProvider
 {
@@ -64,9 +65,9 @@ namespace HiveQuery.DataProvider
             return table;
         }
 
-        public override List<DataTable> Execute(string query, Connection conn, CancellationTokenSource token = null, object data = null)
+        public async override Task<List<DataTable>> Execute(string query, Connection conn, CancellationTokenSource token = null, object data = null)
         {
-            base.Execute(query, conn, token, data);
+            await base.Execute(query, conn, token, data);
             m_Token = token;
             var result = new List<DataTable>();
             if (m_Token == null || !m_Token.IsCancellationRequested)

@@ -230,11 +230,11 @@ namespace HiveQuery.ViewMode
                     return;
                 }
                 m_Token = new CancellationTokenSource();
-                Task.Factory.StartNew(() =>
+                Task.Factory.StartNew(async () =>
                 {
                     var statement = string.IsNullOrEmpty(Statement) ? TextStatement : Statement;
                     if (!string.IsNullOrEmpty(statement))
-                        Result = DataProviderFactory.Instance.Execute(UsingDataProvider, statement, UsingConnection, m_Token);
+                        Result = await DataProviderFactory.Instance.Execute(UsingDataProvider, statement, UsingConnection, m_Token);
                     IsLoading = false;
                 }, m_Token.Token);
             }

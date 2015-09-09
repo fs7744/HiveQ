@@ -59,5 +59,13 @@ namespace HiveQuery.Data
             get { return m_Password; }
             set { Set(() => Password, ref m_Password, value); }
         }
+
+        private string m_CSVSeparator;
+
+        public string CSVSeparator
+        {
+            get { return m_CSVSeparator; }
+            set { Set(() => CSVSeparator, ref m_CSVSeparator, value); }
+        }
     }
 }

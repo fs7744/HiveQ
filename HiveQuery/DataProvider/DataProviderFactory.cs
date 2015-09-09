@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace HiveQuery.DataProvider
 {
@@ -18,6 +19,7 @@ namespace HiveQuery.DataProvider
             m_Providers.Add("Hive", new HiveDataProvider());
             m_Providers.Add("Hive2", new Hive2DataProvider());
             m_Providers.Add("Solr", new SolrDataProvider());
+            m_Providers.Add("HDFS_CSV", new HDFSDataProvider());
         }
 
         public string[] GetKeys()
@@ -32,10 +34,10 @@ namespace HiveQuery.DataProvider
             return provider;
         }
 
-        public List<DataTable> Execute(string key, string query, Connection conn, CancellationTokenSource token = null, object data = null)
+        public async Task<List<DataTable>> Execute(string key, string query, Connection conn, CancellationTokenSource token = null, object data = null)
         {
             DataProviderBase provider = GetProvider(key);
-            return provider != null ? provider.Execute(query, conn, token, data) : new List<DataTable>();
+            return provider != null ? await provider.Execute(query, conn, token, data) : new List<DataTable>();
         }
     }
 }
